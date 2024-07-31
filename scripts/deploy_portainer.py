@@ -48,6 +48,7 @@ def main():
 
     print(f"Portainer URL: {portainer_url}")
     print(f"Environment map: {environment_map}")
+    print(f"Workspace: {workspace}")
 
     try:
         env_map = json.loads(environment_map)
