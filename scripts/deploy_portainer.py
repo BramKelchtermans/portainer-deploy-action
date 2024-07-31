@@ -80,6 +80,7 @@ def main():
                     continue
 
                 stacks = get_stacks(portainer_url, api_key, environment_id)
+                print(f"Found {len(stacks)} stacks in environment {environment_name}")
                 stack = next((stack for stack in stacks if stack['Name'] == stack_name), None)
 
                 if stack:
