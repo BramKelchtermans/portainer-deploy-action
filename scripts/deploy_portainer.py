@@ -32,7 +32,8 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
     response = requests.post(f'{portainer_url}/api/stacks', headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id}, verify=False)
     return response.status_code, response.json()
 
-def update_stack(webhook_url):
+def update_stack(portainer_url, webhook_uuid):
+    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}'
     response = requests.post(webhook_url, verify=False)
     return response.status_code, response.text
 
@@ -87,7 +88,7 @@ def main():
 
                 if stack:
                     # Stack exists, update it
-                    status_code, response = update_stack(stack['AutoUpdate']['Webhook'])
+                    status_code, response = update_stack(portainer_url, stack['AutoUpdate']['Webhook'])
                     print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                 else:
                     # Stack does not exist, create it
