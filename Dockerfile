@@ -10,4 +10,4 @@ RUN pip install requests
 WORKDIR /scripts
 
 # Set the entrypoint to the script
-ENTRYPOINT ["python", "/scripts/deploy_portainer.py"]
+ENTRYPOINT ["python", "./deploy_portainer.py"]
