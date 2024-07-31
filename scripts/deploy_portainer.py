@@ -11,7 +11,7 @@ def get_stacks(portainer_url, api_key, environment_id):
     headers = {
         'Authorization': f'Bearer {api_key}'
     }
-    response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EnvironmentId': environment_id})})
+    response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EnvironmentId': environment_id})}, verify=False)
     return response.json()
 
 def create_stack(portainer_url, api_key, environment_id, stack_name, compose_file_path):
@@ -29,11 +29,11 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
         'Env': [],
         'Prune': False,
     }
-    response = requests.post(f'{portainer_url}/api/stacks', headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id})
+    response = requests.post(f'{portainer_url}/api/stacks', headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id}, verify=False)
     return response.status_code, response.json()
 
 def update_stack(webhook_url):
-    response = requests.post(webhook_url)
+    response = requests.post(webhook_url, verify=False)
     return response.status_code, response.text
 
 def main():
@@ -76,6 +76,7 @@ def main():
 
                 if environment_id is None:
                     print(f"Environment {environment_name} not found in environment map.")
+                    sys.exit(1)
                     continue
 
                 stacks = get_stacks(portainer_url, api_key, environment_id)
