@@ -99,10 +99,16 @@ def main():
                 if stack:
                     # Stack exists, update it
                     status_code, response = update_stack(portainer_url, stack['AutoUpdate']['Webhook'])
+                    if status_code == 500:
+                        print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
+                        sys.exit(1)
                     print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                 else:
                     # Stack does not exist, create it
                     status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path, repository_url, repository_username, repository_password)
+                    if status_code == 500:
+                        print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
+                        sys.exit(1)
                     print(f"Created stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
 
 if __name__ == "__main__":
