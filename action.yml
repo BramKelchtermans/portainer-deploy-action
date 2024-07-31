@@ -1,5 +1,6 @@
 name: Deploy to Portainer
-description: Deploy Docker Compose files to Portainer
+description: Deploys Docker Compose files to a Portainer instance.
+author: Your Name
 
 inputs:
   portainer_url:
@@ -18,12 +19,15 @@ inputs:
     description: 'Path to the file containing changed Docker Compose files'
     required: true
     default: ''
-
+    
+outputs:
+  status:
+    description: 'Status of the deployment'
 runs:
   using: 'docker'
-  image: 'docker://your_docker_image'
+  image: 'Dockerfile'
   args:
     - ${{ inputs.portainer_url }}
     - ${{ inputs.portainer_api_key }}
     - ${{ inputs.environment_map }}
-    - ${{ inputs.changed_files_path }}
+    - ${{ inputs.changed_files }}
