@@ -42,6 +42,8 @@ def main():
         print("Arguments received:", sys.argv)
         sys.exit(1)
 
+    print("Arguments received:", sys.argv)
+
     portainer_url = sys.argv[1]
     api_key = sys.argv[2]
     environment_map = sys.argv[3]
