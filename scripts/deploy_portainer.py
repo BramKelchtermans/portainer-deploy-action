@@ -35,7 +35,7 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
             }
         }
 
-    response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + environment_id, headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id}, verify=False)
+    response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + str(environment_id), headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id}, verify=False)
     return response.status_code, response.json()
 
 def update_stack(portainer_url, webhook_uuid):
