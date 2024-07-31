@@ -21,4 +21,3 @@ runs:
     - ${{ inputs.portainer_url }}
     - ${{ inputs.portainer_api_key }}
     - ${{ inputs.environment_map }}
-    - ${{ github.workspace }}
