@@ -15,11 +15,11 @@ inputs:
     description: 'A JSON object mapping environment names to IDs'
     required: true
     default: ''
-  changed_files_path:
+  changed_files:
     description: 'Path to the file containing changed Docker Compose files'
     required: true
     default: ''
-    
+
 outputs:
   status:
     description: 'Status of the deployment'
