@@ -46,6 +46,9 @@ def main():
     environment_map = sys.argv[3]
     workspace = sys.argv[4]
 
+    print(f"Portainer URL: {portainer_url}")
+    print(f"Environment map: {environment_map}")
+
     try:
         env_map = json.loads(environment_map)
     except json.JSONDecodeError as e:
