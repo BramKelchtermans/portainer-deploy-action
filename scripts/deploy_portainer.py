@@ -87,7 +87,7 @@ def main():
 
                 if stack:
                     # Stack exists, update it
-                    status_code, response = update_stack(stack['Webhook'])
+                    status_code, response = update_stack(stack['AutoUpdate']['Webhook'])
                     print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                 else:
                     # Stack does not exist, create it
