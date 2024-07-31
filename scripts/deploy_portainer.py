@@ -39,16 +39,18 @@ def update_stack(webhook_url):
 def main():
     if len(sys.argv) != 5:
         print(f"Expected 4 arguments but got {len(sys.argv) - 1}")
+        print("Arguments received:", sys.argv)
         sys.exit(1)
 
     portainer_url = sys.argv[1]
     api_key = sys.argv[2]
     environment_map = sys.argv[3]
-    workspace = sys.argv[4]
+    changed_files_path = sys.argv[4]
 
-    print(f"Portainer URL: {portainer_url}")
-    print(f"Environment map: {environment_map}")
-    print(f"Workspace: {workspace}")
+    print("portainer_url:", portainer_url)
+    print("api_key:", api_key)
+    print("environment_map:", environment_map)
+    print("changed_files_path:", changed_files_path)
 
     try:
         env_map = json.loads(environment_map)
@@ -56,30 +58,33 @@ def main():
         print(f"Error decoding environment map: {e}")
         sys.exit(1)
 
-    for root, dirs, files in os.walk(workspace):
-        for file in files:
-            if file == "docker-compose.yml":
-                parts = root.split('/')
-                if len(parts) >= 2:
-                    environment_name = parts[1]
-                    stack_name = parts[2]
-                    environment_id = get_environment_id(environment_name, environment_map)
+    with open(changed_files_path, 'r') as file:
+        changed_files = file.readlines()
+    
+    for file_path in changed_files:
+        file_path = file_path.strip()
+        if file_path.endswith("docker-compose.yml"):
+            parts = file_path.split('/')
+            if len(parts) >= 2:
+                environment_name = parts[1]
+                stack_name = parts[2]
+                environment_id = get_environment_id(environment_name, environment_map)
 
-                    if environment_id is None:
-                        print(f"Environment {environment_name} not found in environment map.")
-                        continue
+                if environment_id is None:
+                    print(f"Environment {environment_name} not found in environment map.")
+                    continue
 
-                    stacks = get_stacks(portainer_url, api_key, environment_id)
-                    stack = next((stack for stack in stacks if stack['Name'] == stack_name), None)
+                stacks = get_stacks(portainer_url, api_key, environment_id)
+                stack = next((stack for stack in stacks if stack['Name'] == stack_name), None)
 
-                    if stack:
-                        # Stack exists, update it
-                        status_code, response = update_stack(stack['Webhook'])
-                        print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
-                    else:
-                        # Stack does not exist, create it
-                        status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, os.path.join(root, file))
-                        print(f"Created stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
+                if stack:
+                    # Stack exists, update it
+                    status_code, response = update_stack(stack['Webhook'])
+                    print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
+                else:
+                    # Stack does not exist, create it
+                    status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path)
+                    print(f"Created stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
 
 if __name__ == "__main__":
     main()
