@@ -1,6 +1,6 @@
 name: Deploy to Portainer
 description: Deploys Docker Compose files to a Portainer instance.
-author: Bram Kelchtermans
+author: Your Name
 inputs:
   portainer_url:
     description: 'URL of the Portainer instance'
@@ -16,8 +16,9 @@ outputs:
     description: 'Status of the deployment'
 runs:
   using: 'docker'
-  image: 'docker://python:3.8-slim'
+  image: 'Dockerfile'
   args:
     - ${{ inputs.portainer_url }}
     - ${{ inputs.portainer_api_key }}
     - ${{ inputs.environment_map }}
+    - ${{ github.workspace }}

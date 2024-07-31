@@ -37,6 +37,10 @@ def update_stack(webhook_url):
     return response.status_code, response.text
 
 def main():
+    if len(sys.argv) != 5:
+        print(f"Expected 4 arguments but got {len(sys.argv) - 1}")
+        sys.exit(1)
+
     portainer_url = sys.argv[1]
     api_key = sys.argv[2]
     environment_map = sys.argv[3]
@@ -47,8 +51,8 @@ def main():
             if file == "docker-compose.yml":
                 parts = root.split('/')
                 if len(parts) >= 2:
-                    environment_name = parts[1]  # Adjusted index to 1
-                    stack_name = parts[2]  # Adjusted index to 2
+                    environment_name = parts[1]
+                    stack_name = parts[2]
                     environment_id = get_environment_id(environment_name, environment_map)
 
                     if environment_id is None:
