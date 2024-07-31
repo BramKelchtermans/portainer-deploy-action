@@ -45,7 +45,7 @@ def main():
     print("Starting deployment script...")
 
     portainer_url = sys.argv[1]
-    api_key = "ptr_w26y8+p6YjOJeTR3Rhayx+5uGEzQ0sFJy40ceCcuKGc="
+    api_key = sys.argv[2]
     environment_map = sys.argv[3]
     changed_files_path = sys.argv[4]
 
