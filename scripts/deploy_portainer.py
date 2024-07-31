@@ -46,6 +46,12 @@ def main():
     environment_map = sys.argv[3]
     workspace = sys.argv[4]
 
+    try:
+        env_map = json.loads(environment_map)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding environment map: {e}")
+        sys.exit(1)
+
     for root, dirs, files in os.walk(workspace):
         for file in files:
             if file == "docker-compose.yml":
