@@ -70,8 +70,8 @@ def main():
         if file_path.endswith("docker-compose.yml"):
             parts = file_path.split('/')
             if len(parts) >= 2:
-                environment_name = parts[1]
-                stack_name = parts[2]
+                environment_name = parts[0]
+                stack_name = parts[1]
                 environment_id = get_environment_id(environment_name, environment_map)
 
                 if environment_id is None:
