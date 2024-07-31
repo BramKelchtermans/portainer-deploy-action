@@ -9,14 +9,14 @@ def get_environment_id(environment_name, environment_map):
 
 def get_stacks(portainer_url, api_key, environment_id):
     headers = {
-        'Authorization': f'Bearer {api_key}'
+        'X-API-Key': f'{api_key}'
     }
     response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EnvironmentId': environment_id})}, verify=False)
     return response.json()
 
 def create_stack(portainer_url, api_key, environment_id, stack_name, compose_file_path):
     headers = {
-        'Authorization': f'Bearer {api_key}',
+        'X-API-Key': f'{api_key}',
         'Content-Type': 'application/json'
     }
     with open(compose_file_path, 'r') as file:
