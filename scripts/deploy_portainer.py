@@ -31,7 +31,7 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
         "composeFile": compose_file_path,
         "autoUpdate": 
         {
-                "webhook": randUuid
+                "webhook": str(randUuid)
             }
         }
 
