@@ -52,6 +52,10 @@ def main():
     print("environment_map:", environment_map)
     print("changed_files_path:", changed_files_path)
 
+    if not changed_files_path or not os.path.isfile(changed_files_path):
+        print(f"Changed files path is invalid or file not found: {changed_files_path}")
+        sys.exit(1)
+
     try:
         env_map = json.loads(environment_map)
     except json.JSONDecodeError as e:
@@ -60,7 +64,7 @@ def main():
 
     with open(changed_files_path, 'r') as file:
         changed_files = file.readlines()
-    
+
     for file_path in changed_files:
         file_path = file_path.strip()
         if file_path.endswith("docker-compose.yml"):
