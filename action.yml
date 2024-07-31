@@ -19,6 +19,18 @@ inputs:
     description: 'Path to the file containing changed Docker Compose files'
     required: true
     default: ''
+  repository_url:
+    description: 'The URL of the Docker repository'
+    required: true
+    default: ''
+  repository_username:
+    description: 'The username for the Docker repository'
+    required: true
+    default: ''
+  repository_password:
+    description: 'The password for the Docker repository'
+    required: true
+    default: ''
 
 outputs:
   status:
@@ -31,3 +43,6 @@ runs:
     - ${{ inputs.portainer_api_key }}
     - ${{ inputs.environment_map }}
     - ${{ inputs.changed_files_path }}
+    - ${{ inputs.repository_url }}
+    - ${{ inputs.repository_username }}
+    - ${{ inputs.repository_password }}
