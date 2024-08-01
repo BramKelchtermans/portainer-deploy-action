@@ -60,11 +60,6 @@ def main():
     repository_username = sys.argv[6]
     repository_password = sys.argv[7]
 
-    print("portainer_url:", portainer_url)
-    print("api_key:", api_key)
-    print("environment_map:", environment_map)
-    print("changed_files_path:", changed_files_path)
-
     if not changed_files_path or not os.path.isfile(changed_files_path):
         print(f"Changed files path is invalid or file not found: {changed_files_path}")
         sys.exit(1)
