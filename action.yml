@@ -2,6 +2,10 @@ name: Deploy to Portainer
 description: Deploys Docker Compose files to a Portainer instance.
 author: Your Name
 
+branding:
+  icon: upload-cloud
+  color: blue
+
 inputs:
   portainer_url:
     description: 'The URL of the Portainer instance'
