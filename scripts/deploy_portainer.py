@@ -88,7 +88,7 @@ def main():
                     continue
 
                 stacks = get_stacks(portainer_url, api_key, environment_id)
-                stack = next((stack for stack in stacks if stack['Name'] == stack_name), None)
+                stack = next((stack for stack in stacks if stack['Name'] == stack_name and stack['EndpointId'] == environment_id), None)
                 print(f"Stack {stack_name} found in environment {environment_name}: {stack}")
 
                 if stack:
