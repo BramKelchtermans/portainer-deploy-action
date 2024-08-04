@@ -45,8 +45,8 @@ def update_stack(portainer_url, webhook_uuid):
     return response.status_code, response.text
 
 def main():
-    if len(sys.argv) != 8:
-        print(f"Expected 7 arguments but got {len(sys.argv) - 1}")
+    if len(sys.argv) != 7:
+        print(f"Expected 6 arguments but got {len(sys.argv) - 1}")
         print("Arguments received:", sys.argv)
         sys.exit(1)
 
