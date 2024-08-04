@@ -4,7 +4,7 @@
 This GitHub Action deploys multiple Docker Compose files to a Portainer instance. It detects changes in Docker Compose files and either updates the existing stack or creates a new one in the specified Portainer environment.
 
 ## Repo structure
-In order to deploy the docker compose files to the right environment, a specific repo structure is desired so that the action can act accordingly. 
+In order to deploy the docker compose files to the right environment, a specific repo structure is desired so that the action can act accordingly. The first level should be the name of the environment to which the stack will be deployed. Second level is the name of the deployed stack.
 Below an example:
 ```
 .
