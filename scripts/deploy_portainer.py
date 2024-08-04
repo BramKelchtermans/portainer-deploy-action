@@ -94,6 +94,7 @@ def main():
                     print(f"Updated stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                 else:
                     # Stack does not exist, create it
+                    print(f"Creating stack {stack_name} in environment {environment_name}...")
                     status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path, repository_url, repository_username, repository_password)
                     if status_code == 500:
                         print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
