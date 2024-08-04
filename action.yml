@@ -15,10 +15,6 @@ inputs:
     description: 'The API key for Portainer authentication'
     required: true
     default: ''
-  environment_map:
-    description: 'A JSON object mapping environment names to IDs'
-    required: true
-    default: ''
   changed_files_path:
     description: 'Path to the file containing changed Docker Compose files'
     required: true
@@ -45,7 +41,6 @@ runs:
   args:
     - ${{ inputs.portainer_url }}
     - ${{ inputs.portainer_api_key }}
-    - ${{ inputs.environment_map }}
     - ${{ inputs.changed_files_path }}
     - ${{ inputs.repository_url }}
     - ${{ inputs.repository_username }}

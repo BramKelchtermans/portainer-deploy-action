@@ -4,9 +4,10 @@ import json
 import requests
 import uuid
 
-def get_environment_id(environment_name, environment_map):
-    env_map = json.loads(environment_map)
-    return env_map.get(environment_name)
+def get_environment_id(portainer_url, api_key, environment_name):
+    env_map = requests.get(f'{portainer_url}/api/endpoints', headers={'X-API-Key': f'{api_key}'}, verify=False).json()
+    environment = next((env for env in env_map if env['Name'] == environment_name), None)
+    return environment['Id'] if environment else None
 
 def get_stacks(portainer_url, api_key, environment_id):
     headers = {
@@ -53,21 +54,14 @@ def main():
 
     portainer_url = sys.argv[1]
     api_key = sys.argv[2]
-    environment_map = sys.argv[3]
-    changed_files_path = sys.argv[4]
+    changed_files_path = sys.argv[3]
     
-    repository_url = sys.argv[5]
-    repository_username = sys.argv[6]
-    repository_password = sys.argv[7]
+    repository_url = sys.argv[4]
+    repository_username = sys.argv[5]
+    repository_password = sys.argv[6]
 
     if not changed_files_path or not os.path.isfile(changed_files_path):
         print(f"Changed files path is invalid or file not found: {changed_files_path}")
-        sys.exit(1)
-
-    try:
-        env_map = json.loads(environment_map)
-    except json.JSONDecodeError as e:
-        print(f"Error decoding environment map: {e}")
         sys.exit(1)
 
     with open(changed_files_path, 'r') as file:
@@ -80,7 +74,7 @@ def main():
             if len(parts) >= 2:
                 environment_name = parts[0]
                 stack_name = parts[1]
-                environment_id = get_environment_id(environment_name, environment_map)
+                environment_id = get_environment_id(portainer_url, api_key, environment_name)
 
                 if environment_id is None:
                     print(f"Environment {environment_name} not found in environment map.")
