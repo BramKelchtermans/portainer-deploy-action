@@ -60,7 +60,7 @@ def update_stack(portainer_url, endpoint_id, api_key, stack_id, webhook_uuid, en
         update_response = requests.put(update_url, json={"env": environment}, verify=False, headers=headers)
         print(f"Update response: {update_response.status_code}, {update_response.text}")
         
-    webhook_url = f'{portainer_url}/api/webhooks/{webhook_uuid}'
+    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}'
     print(f"Triggering webhook {webhook_url}...")
     response = requests.post(webhook_url, verify=False, headers=headers)
     return response.status_code, response.text
