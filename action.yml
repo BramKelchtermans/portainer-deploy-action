@@ -31,6 +31,10 @@ inputs:
     description: 'The password for the Docker repository'
     required: true
     default: ''
+  environment:
+    description: 'The environment to deploy to'
+    required: false
+    default: 'default'
 
 outputs:
   status:
@@ -45,3 +49,4 @@ runs:
     - ${{ inputs.repository_url }}
     - ${{ inputs.repository_username }}
     - ${{ inputs.repository_password }}
+    - ${{ inputs.environment }}

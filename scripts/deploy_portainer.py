@@ -13,7 +13,7 @@ def get_stacks(portainer_url, api_key, environment_id):
     headers = {
         'X-API-Key': f'{api_key}'
     }
-    response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EnvironmentId': environment_id})}, verify=False)
+    response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EndpointId': environment_id})}, verify=False)
     return response.json()
 
 def create_stack(portainer_url, api_key, environment_id, stack_name, compose_file_path, repository_url, repository_username, repository_password):
@@ -30,23 +30,37 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
         "repositoryPassword": repository_password,
         "repositoryAuthentication": True,
         "composeFile": compose_file_path,
-        "autoUpdate": 
-        {
-                "webhook": str(randUuid)
-            }
+        "autoUpdate": {
+            "webhook": str(randUuid)
         }
+    }
 
-    response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + str(environment_id), headers=headers, json=data, params={'type': 2, 'method': 'string', 'endpointId': environment_id}, verify=False)
+    response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + str(environment_id), headers=headers, json=data, verify=False)
     return response.status_code, response.json()
 
-def update_stack(portainer_url, webhook_uuid):
-    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}'
+def parse_environment_file(environment_file):
+    with open(environment_file, 'r') as file:
+        environment = file.read()
+        
+    environment = environment.split('\n')
+    environment = [x for x in environment if x]
+    environment = [x.split('=') for x in environment]
+    environment = [{"name": x[0], "value": x[1]} for x in environment]
+    return environment
+
+def update_stack(portainer_url, stack_id, webhook_uuid, environment_file):
+    if environment_file is not None:
+        environment = parse_environment_file(environment_file)
+        update_url = f'{portainer_url}/api/stacks/{stack_id}'
+        requests.put(update_url, json={"env": environment}, verify=False)
+        
+    webhook_url = f'{portainer_url}/api/webhooks/{webhook_uuid}'
     response = requests.post(webhook_url, verify=False)
     return response.status_code, response.text
 
 def main():
-    if len(sys.argv) != 7:
-        print(f"Expected 6 arguments but got {len(sys.argv) - 1}")
+    if len(sys.argv) != 8:
+        print(f"Expected 7 arguments but got {len(sys.argv) - 1}")
         print("Arguments received:", sys.argv)
         sys.exit(1)
 
@@ -59,6 +73,7 @@ def main():
     repository_url = sys.argv[4]
     repository_username = sys.argv[5]
     repository_password = sys.argv[6]
+    environment_file = sys.argv[7]
 
     if not changed_files_path or not os.path.isfile(changed_files_path):
         print(f"Changed files path is invalid or file not found: {changed_files_path}")
@@ -79,7 +94,6 @@ def main():
                 if environment_id is None:
                     print(f"Environment {environment_name} not found in environment map.")
                     sys.exit(1)
-                    continue
 
                 stacks = get_stacks(portainer_url, api_key, environment_id)
                 stack = next((stack for stack in stacks if stack['Name'] == stack_name and stack['EndpointId'] == environment_id), None)
@@ -87,7 +101,7 @@ def main():
 
                 if stack:
                     # Stack exists, update it
-                    status_code, response = update_stack(portainer_url, stack['AutoUpdate']['Webhook'])
+                    status_code, response = update_stack(portainer_url, stack['Id'], stack['AutoUpdate']['Webhook'], environment_file)
                     if status_code == 500:
                         print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                         sys.exit(1)
@@ -97,7 +111,7 @@ def main():
                     print(f"Creating stack {stack_name} in environment {environment_name}...")
                     status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path, repository_url, repository_username, repository_password)
                     if status_code == 500:
-                        print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
+                        print(f"Failed to create stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                         sys.exit(1)
                     print(f"Created stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
 
