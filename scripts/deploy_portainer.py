@@ -48,7 +48,7 @@ def parse_environment_file(environment_file):
     environment = [{"name": x[0], "value": x[1]} for x in environment]
     return environment
 
-def update_stack(portainer_url, stack_id, webhook_uuid, environment_file):
+def update_stack(portainer_url, api_key, stack_id, webhook_uuid, environment_file):
     headers = {
         'X-API-Key': f'{api_key}'
     }
@@ -108,7 +108,7 @@ def main():
 
                 if stack:
                     # Stack exists, update it
-                    status_code, response = update_stack(portainer_url, stack['Id'], stack['AutoUpdate']['Webhook'], environment_file)
+                    status_code, response = update_stack(portainer_url, api_key, stack['Id'], stack['AutoUpdate']['Webhook'], environment_file)
                     if status_code == 500:
                         print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                         sys.exit(1)
