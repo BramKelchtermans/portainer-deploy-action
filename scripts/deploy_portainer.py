@@ -52,7 +52,9 @@ def update_stack(portainer_url, stack_id, webhook_uuid, environment_file):
     if environment_file is not None and environment_file != "":
         environment = parse_environment_file(environment_file)
         update_url = f'{portainer_url}/api/stacks/{stack_id}'
-        requests.put(update_url, json={"env": environment}, verify=False)
+        print(f"Updating stack {stack_id} with environment {environment}...")
+        update_response = requests.put(update_url, json={"env": environment}, verify=False)
+        print(f"Update response: {update_response.status_code}, {update_response.text}")
         
     webhook_url = f'{portainer_url}/api/webhooks/{webhook_uuid}'
     print(f"Triggering webhook {webhook_url}...")
