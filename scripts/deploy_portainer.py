@@ -49,7 +49,7 @@ def parse_environment_file(environment_file):
     return environment
 
 def update_stack(portainer_url, stack_id, webhook_uuid, environment_file):
-    if environment_file is not None and os.path.isfile(environment_file):
+    if environment_file is not None and environment_file != "":
         environment = parse_environment_file(environment_file)
         update_url = f'{portainer_url}/api/stacks/{stack_id}'
         requests.put(update_url, json={"env": environment}, verify=False)
