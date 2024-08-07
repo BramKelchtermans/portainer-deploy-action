@@ -53,14 +53,14 @@ def update_stack(portainer_url, endpoint_id, api_key, stack_id, webhook_uuid, en
         'X-API-Key': f'{api_key}'
     }
     
+    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}?endpointId={endpoint_id}'
     if environment_file is not None and environment_file != "":
         environment = parse_environment_file(environment_file)
         update_url = f'{portainer_url}/api/stacks/{stack_id}?endpointId={endpoint_id}'
-        print(f"Updating stack {stack_id} with environment {environment}...")
-        update_response = requests.put(update_url, json={"env": environment}, verify=False, headers=headers)
-        print(f"Update response: {update_response.status_code}, {update_response.text}")
+        # add parameters to url
+        for env in environment:
+            update_url += f'&{env["name"]}=${env["value"]}'
         
-    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}'
     print(f"Triggering webhook {webhook_url}...")
     response = requests.post(webhook_url, verify=False, headers=headers)
     return response.status_code, response.text
