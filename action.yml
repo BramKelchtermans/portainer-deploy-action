@@ -31,8 +31,8 @@ inputs:
     description: 'The password for the Docker repository'
     required: true
     default: ''
-  environment:
-    description: 'The environment to deploy to'
+  environment_file:
+    description: 'The environment file to use for the deployment'
     required: false
     default: 'default'
 
@@ -49,4 +49,4 @@ runs:
     - ${{ inputs.repository_url }}
     - ${{ inputs.repository_username }}
     - ${{ inputs.repository_password }}
-    - ${{ inputs.environment }}
+    - ${{ inputs.environment_file }}
