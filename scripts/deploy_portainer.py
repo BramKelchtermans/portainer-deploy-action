@@ -55,6 +55,7 @@ def update_stack(portainer_url, stack_id, webhook_uuid, environment_file):
         requests.put(update_url, json={"env": environment}, verify=False)
         
     webhook_url = f'{portainer_url}/api/webhooks/{webhook_uuid}'
+    print(f"Triggering webhook {webhook_url}...")
     response = requests.post(webhook_url, verify=False)
     return response.status_code, response.text
 
