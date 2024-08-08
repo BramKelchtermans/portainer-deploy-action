@@ -16,26 +16,37 @@ def get_stacks(portainer_url, api_key, environment_id):
     response = requests.get(f'{portainer_url}/api/stacks', headers=headers, params={'filters': json.dumps({'EndpointId': environment_id})}, verify=False)
     return response.json()
 
-def create_stack(portainer_url, api_key, environment_id, stack_name, compose_file_path, repository_url, repository_username, repository_password):
+def create_stack(portainer_url, api_key, environment_id, stack_name, compose_file_path, environment_file_path):
     headers = {
         'X-API-Key': f'{api_key}',
         'Content-Type': 'application/json'
     }
     randUuid = uuid.uuid4()
 
-    data = {
-        "name": stack_name,
-        "repositoryURL": repository_url,
-        "repositoryUsername": repository_username,
-        "repositoryPassword": repository_password,
-        "repositoryAuthentication": True,
-        "composeFile": compose_file_path,
-        "autoUpdate": {
-            "webhook": str(randUuid)
-        }
-    }
+    # data = {
+    #     "name": stack_name,
+    #     "repositoryURL": repository_url,
+    #     "repositoryUsername": repository_username,
+    #     "repositoryPassword": repository_password,
+    #     "repositoryAuthentication": True,
+    #     "composeFile": compose_file_path,
+    #     "autoUpdate": {
+    #         "webhook": str(randUuid)
+    #     }
+    # }
 
-    response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + str(environment_id), headers=headers, json=data, verify=False)
+
+    data={}
+    if(environment_file_path is not None and environment_file_path != ""):
+        environmentVars = parse_environment_file(environment_file_path)
+        data['env'] = environmentVars
+    
+    data['name'] = stack_name
+    data['stackFileContent'] = open(compose_file_path, 'r').read()
+    
+    response = requests.post(f'{portainer_url}/api/stacks/create/standalone/string?endpointId=' + str(environment_id), headers=headers, json=data, verify=False)
+
+    # response = requests.post(f'{portainer_url}/api/stacks?type=2&method=repository&endpointId=' + str(environment_id), headers=headers, json=data, verify=False)
     return response.status_code, response.json()
 
 def parse_environment_file(environment_file):
@@ -119,7 +130,7 @@ def main():
                 else:
                     # Stack does not exist, create it
                     print(f"Creating stack {stack_name} in environment {environment_name}...")
-                    status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path, repository_url, repository_username, repository_password)
+                    status_code, response = create_stack(portainer_url, api_key, environment_id, stack_name, file_path, environment_file)
                     if status_code == 500:
                         print(f"Failed to create stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                         sys.exit(1)
