@@ -33,9 +33,7 @@ Below an example:
     portainer_url: The URL of the Portainer instance.
     portainer_api_key: The API key for Portainer authentication.
     changed_files_path: Path to the file containing changed Docker Compose files.
-    repository_url: The URL of the repository containing the docker compose files.
-    repository_username: The username for the Docker repository.
-    repository_password: The password for the Docker repository.
+    environment_file: (OPTIONAL) File containing environment variables 
 
 ## Example workflow
 To use this action in your GitHub workflow, create a `.github/workflows/deploy.yml` file in your repository with the following content:
