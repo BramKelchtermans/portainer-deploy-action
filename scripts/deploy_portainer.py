@@ -65,7 +65,7 @@ def update_stack(portainer_url, endpoint_id, api_key, stack_id, file_path, envir
     update_url = f'{portainer_url}/api/stacks/{stack_id}?endpointId={endpoint_id}'
     response = requests.put(update_url, headers=headers, json=data, verify=False)
         
-    print(f"Updating stack {stack_id} with compose file {compose_file}...")
+    print(f"Updating stack {stack_id} with compose file {file_path}...")
     return response.status_code, response.text
 
 def main():
