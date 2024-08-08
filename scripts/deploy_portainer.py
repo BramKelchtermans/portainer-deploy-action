@@ -3,6 +3,7 @@ import sys
 import json
 import requests
 import uuid
+import re
 
 def get_environment_id(portainer_url, api_key, environment_name):
     env_map = requests.get(f'{portainer_url}/api/endpoints', headers={'X-API-Key': f'{api_key}'}, verify=False).json()
@@ -38,22 +39,26 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
     return response.status_code, response.json()
 
 def parse_environment_file(environment_file, stack_file_content):
+    # Read the .env file
     with open(environment_file, 'r') as file:
         environment = file.read()
         
+    # Split lines and filter out empty ones
     environment = environment.split('\n')
     environment = [x for x in environment if x]
+    
+    # Split each line into a name-value pair
     environment = [x.split('=') for x in environment]
     
-    environment = [{"name": x[0], "value": x[1]} for x in environment]
-    for x in environment:
-        # Check if environment variable is used in stack file
-        if stack_file_content.find('${' + x['name'] + '}') == -1:
-            print(f"Environment variable {x['name']} is not used in stack file. Skipping...")
-            environment.remove(x)
-        
-        
-    return environment
+    # Filter out the variables that are used in the stack_file_content
+    used_environment = []
+    for var in environment:
+        name, value = var[0], var[1]
+        # Check if the variable name is used in the stack file (e.g., ${NAME})
+        if re.search(rf'\${{{name}}}', stack_file_content):
+            used_environment.append({"name": name, "value": value})
+    
+    return used_environment
 
 def update_stack(portainer_url, endpoint_id, api_key, stack_id, file_path, environment_file):
     headers = {
