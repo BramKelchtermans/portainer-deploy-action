@@ -23,18 +23,6 @@ def create_stack(portainer_url, api_key, environment_id, stack_name, compose_fil
     }
     randUuid = uuid.uuid4()
 
-    # data = {
-    #     "name": stack_name,
-    #     "repositoryURL": repository_url,
-    #     "repositoryUsername": repository_username,
-    #     "repositoryPassword": repository_password,
-    #     "repositoryAuthentication": True,
-    #     "composeFile": compose_file_path,
-    #     "autoUpdate": {
-    #         "webhook": str(randUuid)
-    #     }
-    # }
-
 
     data={}
     if(environment_file_path is not None and environment_file_path != ""):
@@ -59,29 +47,30 @@ def parse_environment_file(environment_file):
     environment = [{"name": x[0], "value": x[1]} for x in environment]
     return environment
 
-def update_stack(portainer_url, endpoint_id, api_key, stack_id, webhook_uuid, file_path, environment_file):
+def update_stack(portainer_url, endpoint_id, api_key, stack_id, file_path, environment_file):
     headers = {
         'X-API-Key': f'{api_key}'
     }
+    
+    data = {}
+
+    if environment_file is not None and environment_file != "":
+        environment = parse_environment_file(environment_file)
+        data['env'] = environment
+    
     with open(file_path, 'r') as file:
         compose_file = file.read()
-        print(f"Updating stack {stack_id} with compose file {compose_file}...")
-    
-    webhook_url = f'{portainer_url}/api/stacks/webhooks/{webhook_uuid}'
-    if environment_file is not None and environment_file != "":
-        webhook_url += '?'
-        environment = parse_environment_file(environment_file)
-        # add parameters to url
-        for env in environment:
-            webhook_url += f'{env["name"]}={env["value"]}&'
+        data['stackFileContent'] = compose_file
         
-    print(f"Triggering webhook {webhook_url}...")
-    response = requests.post(webhook_url, verify=False, headers=headers)
+    update_url = f'{portainer_url}/api/stacks/{stack_id}?endpointId={endpoint_id}'
+    response = requests.put(update_url, headers=headers, json=data, verify=False)
+        
+    print(f"Updating stack {stack_id} with compose file {compose_file}...")
     return response.status_code, response.text
 
 def main():
-    if len(sys.argv) != 8:
-        print(f"Expected 7 arguments but got {len(sys.argv) - 1}")
+    if len(sys.argv) != 5:
+        print(f"Expected 4 arguments but got {len(sys.argv) - 1}")
         print("Arguments received:", sys.argv)
         sys.exit(1)
 
@@ -90,11 +79,7 @@ def main():
     portainer_url = sys.argv[1]
     api_key = sys.argv[2]
     changed_files_path = sys.argv[3]
-    
-    repository_url = sys.argv[4]
-    repository_username = sys.argv[5]
-    repository_password = sys.argv[6]
-    environment_file = sys.argv[7]
+    environment_file = sys.argv[4]
 
     if not changed_files_path or not os.path.isfile(changed_files_path):
         print(f"Changed files path is invalid or file not found: {changed_files_path}")
@@ -122,7 +107,7 @@ def main():
 
                 if stack:
                     # Stack exists, update it
-                    status_code, response = update_stack(portainer_url, environment_id, api_key, stack['Id'], stack['AutoUpdate']['Webhook'], file_path, environment_file)
+                    status_code, response = update_stack(portainer_url, environment_id, api_key, stack['Id'], file_path, environment_file)
                     if status_code == 500:
                         print(f"Failed to update stack {stack_name} in environment {environment_name}. Status code: {status_code}. Response: {response}")
                         sys.exit(1)
