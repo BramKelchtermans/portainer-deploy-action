@@ -45,8 +45,14 @@ def parse_environment_file(environment_file, stack_file_content):
     environment = [x for x in environment if x]
     environment = [x.split('=') for x in environment]
     
-    if '${{x[0]}}' in stack_file_content:
-        environment = [{"name": x[0], "value": x[1]} for x in environment]
+    environment = [{"name": x[0], "value": x[1]} for x in environment]
+    for x in environment:
+        # Check if environment variable is used in stack file
+        if stack_file_content.find('${' + x['name'] + '}') == -1:
+            print(f"Environment variable {x['name']} is not used in stack file. Skipping...")
+            environment.remove(x)
+        
+        
     return environment
 
 def update_stack(portainer_url, endpoint_id, api_key, stack_id, file_path, environment_file):
